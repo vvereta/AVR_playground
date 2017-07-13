@@ -17,7 +17,6 @@ void	init_led(void)
 void	init_timer(void)
 {
 	cli();
-	TCCR1B = 0;
 	TCCR1B |= (1 << CS12);	// 256 prescaler 
 	TIMSK1 |= (1 << TOIE1);	// enable timer overflow interrupt
 	sei();
