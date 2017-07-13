@@ -4,8 +4,6 @@
 #define BUTTON 1 << 2
 #define LED 1 << 5
 
-unsigned int status;
-
 ISR(INT0_vect)
 {
 	PORTB ^= (LED);
