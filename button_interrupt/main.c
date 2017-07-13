@@ -11,16 +11,37 @@ ISR(INT0_vect)
 	PORTB ^= (LED);
 }
 
+void		led_init(void)
+{
+	DDRB |= LED;
+	PORTB |= LED;
+}
+
+void		button_init(void)
+{
+	DDRD &= ~(BUTTON);
+	PORTD |= (BUTTON);
+}
+
+void		int_init(void)
+{
+	EICRA = 0x2;
+	EIMSK = 0x01;
+	EIFR = 0;
+}
+
+void		all_init(void)
+{
+	cli();
+	led_init();
+	button_init();
+	int_init();
+	sei();
+}
+
 int		main(void)
 {
-  cli();
-  DDRB |= LED;
-  DDRD &= ~(BUTTON);
-  PORTD |= (BUTTON);
-  EICRA = 0x2;
-  EIMSK = 0x01;
-  EIFR = 0;
-  sei();
+	all_init();
 	
 	while (1)
 		;
