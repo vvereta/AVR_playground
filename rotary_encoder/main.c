@@ -42,7 +42,7 @@ void	set_timers(void)
 
 void	all_init(void)
 {
-	init_ports();
+	//init_ports();
 	init_led();
 	set_timers();
 }
