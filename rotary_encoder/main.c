@@ -1,25 +1,32 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define pinA 1 << 2
-#define pinB 1 << 3
-#define LED 1<<5;
+#define pinA 1 << 3
+#define pinB 1 << 4
+#define LED 1<<6;
 
-volatile unsigned char direction = 0;
+volatile unsigned char	pwm = 127;
 
-ISR		(TIMER0_OVF_vect)  // T0 timer overflow interrupt
+unsigned char	ask_encoder(void)
 {
-	PORTB &=~(LED);
+	static unsigned char	last_state = 0;
+	unsigned char			current_state;
+
+	current_state = digitalRead(encoder0PinA);
+	if ((last_state == LOW) && (current_state == HIGH))
+	{
+		if (digitalRead(encoder0PinB) == LOW)
+			pwm--;
+		else
+			pwm++;
+	}
+	last_state = current_state;
+	return (pwm);
 }
 
-ISR		(TIMER0_COMP_vect)  // T0 timer compare interrupt
+ISR		(INT1_vect)  /*check encoder*/
 {
-	PORTB |=(LED);  
-}
-
-ISR		(TIMER2_OVF_vect)  /*check encoder*/
-{
-	ask_encoder();
+	OCR0A = ask_encoder();
 } 
 
 void	init_ports(void)
@@ -31,26 +38,36 @@ void	init_ports(void)
 
 void	init_led(void)
 {
-	DDRB |= LED;
+	DDRD |= LED;
 }
 
 void	set_timers(void)
 {
-	TCCR2B |= CS22;
-	TIMSK2 |= TOIE;
+	TCCR0A |= _BV(COM0A1) | _BV(WGM00) | _BV(WGM01);
+	TCCR0B |= _BV(CS00);
+	OCR0A = pwm;
+}
+
+void	set_interrupt(void)
+{
+	EICRA |= (1 << ISC10) //Any logical change on INT1
+	EIMSK |= (1 << INT1);//External Interrupt Request 1 Enable
+	EIFR = 0; //Clear flags
 }
 
 void	all_init(void)
 {
-	//init_ports();
+	cli();
+	init_ports();
 	init_led();
 	set_timers();
+	set_interrupt();
+	sei();
 }
 
 int		main(void)
 {
 	all_init();
-	
 	while (1)
 		;
 	return (0);
