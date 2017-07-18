@@ -3,7 +3,7 @@
 
 #define pinA 1 << 3
 #define pinB 1 << 4
-#define LED 1<<6;
+#define LED 1 << 6;
 
 volatile unsigned char	pwm = 127;
 
@@ -12,7 +12,7 @@ unsigned char	ask_encoder(void)
 	unsigned char	last_state = 0;
 	unsigned char	current_state;
 
-	current_state = PIND & (pinA);//digitalRead(encoder0PinA);
+	current_state = PIND & (pinA);
 	if ((last_state == 0) && (current_state))
 	{
 		if ((PIND & (pinB)) == 0)
