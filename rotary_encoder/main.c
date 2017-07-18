@@ -9,16 +9,16 @@ volatile unsigned char	pwm = 127;
 
 unsigned char	ask_encoder(void)
 {
-	static unsigned char	last_state = 0;
-	unsigned char			current_state;
+	unsigned char	last_state = 0;
+	unsigned char	current_state;
 
-	current_state = digitalRead(encoder0PinA);
-	if ((last_state == LOW) && (current_state == HIGH))
+	current_state = PIND & (pinA);//digitalRead(encoder0PinA);
+	if ((last_state == 0) && (current_state))
 	{
-		if (digitalRead(encoder0PinB) == LOW)
-			pwm--;
+		if ((PIND & (pinB)) == 0)
+			pwm ? pwm-- : 0;
 		else
-			pwm++;
+			pwm < 255 ? pwm++ : 0;
 	}
 	last_state = current_state;
 	return (pwm);
@@ -50,7 +50,7 @@ void	set_timers(void)
 
 void	set_interrupt(void)
 {
-	EICRA |= (1 << ISC10) //Any logical change on INT1
+	EICRA |= (1 << ISC10); //Any logical change on INT1
 	EIMSK |= (1 << INT1);//External Interrupt Request 1 Enable
 	EIFR = 0; //Clear flags
 }
