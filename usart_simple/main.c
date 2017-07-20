@@ -18,23 +18,25 @@ static void init_uart(const unsigned long baudrate) {
     UCSR0C = 3 << UCSZ00;
 }
 
-/* Primitive synchronous print */
-static int print_polling(const char str[]) {
-    size_t i = 0;
-    const size_t N = strlen(str);
+void USART_putc(unsigned char data)
+{
+    // wait for an empty buffer
+    while ( !(UCSR0A & (1 << UDRE0)) );
     
-    for (i = 0; i < N; i++) {
-        UDR0 = str[i];
-        while (!(UCSR0A & (1 << UDRE0)));
-    }
-    
-    return N;
+    // put the data into the buffer = send it
+    UDR0 = data;
+}
+
+void USART_puts(char* str)
+{
+    while(*str)
+        USART_putc(*str++);
 }
 
 ISR(TIMER1_OVF_vect)	
 {
     PORTB ^= (LED);
-    print_polling("Message\r\n");
+    USART_puts("Message\n\r");
 }
 
 void	init_led(void)
