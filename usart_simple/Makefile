@@ -1,37 +1,37 @@
-#Контроллер, установленный на плате. Может быть другим, например atmega328 
-DEVICE     = atmega2560
+F_CPU  := 16000000
 
-#Тактовая частота 16 МГц 
-CLOCK      = 16000000
+#atmega2560
+DEVICE := atmega2560
+PROGRAMMER := wiring
+PORT   := /dev/cu.usbmodem1421
+SPEED  := 115200
 
-#Команда запуска avrdude. Ее нужно скопировать из Arduino IDE.
-AVRDUDE = /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude -C/Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf -v -patmega2560 -cwiring -P/dev/cu.usbmodem14311 -b115200 -D
+#atmega328p
+#DEVICE := atmega328p
+#PROGRAMMER := arduino
+#PORT   := /dev/cu.wchusbserial1420
+#SPEED  := 57600
 
-OBJECTS    = main.o
+CC      := /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc
+CONF 	:= /Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf
+AVRDUDE := /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude -C$(CONF) -v -p$(DEVICE) -c$(PROGRAMMER) -P$(PORT) -b$(SPEED) -D -V
 
-COMPILE = /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
+CFLAGS  += -Wall -Os -DF_CPU=$(F_CPU) -DMCU=$(DEVICE) -mmcu=$(DEVICE)
 
-all:	main.hex
+OBJECTS := main.o 
+TMPOUT  := main.elf
+OUT     := main.hex
 
-.c.o:
-	$(COMPILE) -c $< -o $@
+all: $(OUT)
 
-.S.o:
-	$(COMPILE) -x assembler-with-cpp -c $< -o $@
-
-.c.s:
-	$(COMPILE) -S $< -o $@
-
-flash:	all
-	$(AVRDUDE) -U flash:w:main.hex:i
+flash: $(OUT)
+	$(AVRDUDE) -U flash:w:$^:i
 
 clean:
-	rm -f main.hex main.elf $(OBJECTS)
+	-rm -f $(OUT) $(TMPOUT) $(OBJECTS)
 
-main.elf: $(OBJECTS)
-	$(COMPILE) -o main.elf $(OBJECTS)
+$(OUT): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(TMPOUT) $^
+	/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -j .text -j .data -O ihex $(TMPOUT) $@
+	/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-size --format=avr --mcu=$(DEVICE) $@
 
-main.hex: main.elf
-	rm -f main.hex
-	/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -j .text -j .data -O ihex main.elf main.hex
-	/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-size --format=avr --mcu=$(DEVICE) main.elf

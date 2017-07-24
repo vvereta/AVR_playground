@@ -4,6 +4,7 @@
 #include <string.h>
 
 int LED = 1<<7;
+//int LED = 1<<5;
 
 static void init_uart(const unsigned long baudrate) {
     const uint16_t ubrr = F_CPU/8/baudrate - 1;
