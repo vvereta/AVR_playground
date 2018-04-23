@@ -1,6 +1,13 @@
 NAME = lib_atmega328p.a
 
-CC = avr-gcc
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
+CC      := avr-gcc
+endif
+
+ifeq ($(UNAME), Darwin)
+CC      := /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc
+endif
 
 DEVICE := atmega328p
 F_CPU  := 16000000

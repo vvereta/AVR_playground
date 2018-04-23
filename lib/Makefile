@@ -2,11 +2,20 @@ DEVICE := atmega328p
 F_CPU  := 16000000
 
 PROGRAMMER = arduino
-PORT   := /dev/ttyUSB0
 SPEED  := 57600
-
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
+PORT   := /dev/ttyUSB0
 CC      := avr-gcc
 AVRDUDE := avrdude -v -p $(DEVICE) -c $(PROGRAMMER) -P $(PORT) -b $(SPEED) -D -V
+endif
+
+ifeq ($(UNAME), Darwin)
+PORT   := /dev/cu.wchusbserial1420
+CC      := /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc
+CONF 	:= /Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf
+AVRDUDE := /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude -C$(CONF) -v -p$(DEVICE) -c$(PROGRAMMER) -P$(PORT) -b$(SPEED) -D -V
+endif
 
 CFLAGS  += -Wall -Os -DF_CPU=$(F_CPU) -mmcu=$(DEVICE)
 
