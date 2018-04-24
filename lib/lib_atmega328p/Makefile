@@ -22,6 +22,7 @@ OBJECTS_FLD = obj
 
 OBJECTS =\
 	$(OBJECTS_FLD)/add.o\
+	$(OBJECTS_FLD)/sub.o
 
 INCLUDES =\
 	$(INCLUDES_FLD)/lib_atmega328p.h
@@ -48,3 +49,6 @@ re : fclean all
 $(OBJECTS_FLD)/add.o : $(SOURCES_FLD)/add.c
 	@mkdir -p $(OBJECTS_FLD)
 	@$(CC) -I $(INCLUDES_FLD) $(CFLAGS) -c $(SOURCES_FLD)/add.c -o $(OBJECTS_FLD)/add.o
+
+$(OBJECTS_FLD)/sub.o : $(SOURCES_FLD)/sub.c
+	@$(CC) -I $(INCLUDES_FLD) $(CFLAGS) -c $(SOURCES_FLD)/sub.c -o $(OBJECTS_FLD)/sub.o

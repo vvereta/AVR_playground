@@ -26,6 +26,8 @@ int	main(void)
 	init_led();
 	init_timer();
 	add(5, 2);
+	sub(9, 7);
+	int foo(void);
 	while (1)
 	;
 	return (0);
