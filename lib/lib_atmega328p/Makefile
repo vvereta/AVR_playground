@@ -22,7 +22,8 @@ OBJECTS_FLD = obj
 
 OBJECTS =\
 	$(OBJECTS_FLD)/add.o\
-	$(OBJECTS_FLD)/sub.o
+	$(OBJECTS_FLD)/sub.o\
+	$(OBJECTS_FLD)/usart.o
 
 INCLUDES =\
 	$(INCLUDES_FLD)/lib_atmega328p.h
@@ -52,3 +53,6 @@ $(OBJECTS_FLD)/add.o : $(SOURCES_FLD)/add.c
 
 $(OBJECTS_FLD)/sub.o : $(SOURCES_FLD)/sub.c
 	@$(CC) -I $(INCLUDES_FLD) $(CFLAGS) -c $(SOURCES_FLD)/sub.c -o $(OBJECTS_FLD)/sub.o
+
+$(OBJECTS_FLD)/usart.o : $(SOURCES_FLD)/usart.c
+	@$(CC) -I $(INCLUDES_FLD) $(CFLAGS) -c $(SOURCES_FLD)/usart.c -o $(OBJECTS_FLD)/usart.o
